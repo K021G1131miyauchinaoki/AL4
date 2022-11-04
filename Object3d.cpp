@@ -404,7 +404,7 @@ void Object3d::CreateModel()
 	//ファイルストリーム
 	std::ifstream file;
 	//.objファイルを開く
-	file.open("Resources/triangle/triangle.obj");
+	file.open("Resources/triangle_tex/triangle_tex.obj");
 	//ファイルオープン失敗をチェック
 	assert(!file.fail());
 
@@ -432,9 +432,9 @@ void Object3d::CreateModel()
 			//座標データに追加
 			positions.emplace_back(position);
 			//頂点データに追加
-			VertexPosNormalUv	vertex{};
-			vertex.pos = position;
-			vertices.emplace_back(vertex);
+			//VertexPosNormalUv	vertex{};
+			//vertex.pos = position;
+			//vertices.emplace_back(vertex);
 		}
 		//先頭文字列がfならポリゴン（三角形）
 		if (key=="f")
@@ -444,11 +444,42 @@ void Object3d::CreateModel()
 			while (getline(line_stream, index_string,' ')) {
 				//頂点インデックス一個分の文字列をストリームに変換して解析しやすくする
 				std::istringstream index_stream(index_string);
-				unsigned short indexPosition;
+				unsigned short indexPosition,indexNormal,indexTexcoord;
 				index_stream >> indexPosition;
+				index_stream.seekg(1, std::ios_base::cur);//スラッシュを飛ばす
+				index_stream >> indexTexcoord;
+				index_stream.seekg(1, std::ios_base::cur);//スラッシュを飛ばす
+				index_stream >> indexNormal;
+				//頂点データの追加
+				VertexPosNormalUv vertex{};
+				vertex.pos = positions[indexPosition - 1];
+				vertex.normal = normals[indexNormal - 1];
+				vertex.uv = texcoords[indexTexcoord - 1];
+				vertices.emplace_back(vertex);
 				//頂点インデックスに追加
-				indices.emplace_back(indexPosition - 1);
+				indices.emplace_back((unsigned short)indices.size());
 			}
+		}
+		if (key=="vt")
+		{
+			//UV成分の読み込み
+			XMFLOAT2	texcoord{};
+			line_stream >> texcoord.x;
+			line_stream >> texcoord.y;
+			//v方向反転　//モデリングツールによって方向が逆になるため
+			texcoord.y = 1.0f - texcoord.y;
+			//テクスチャ座標データに追加
+			texcoords.emplace_back(texcoord);
+		}
+		if (key == "vn")
+		{
+			//xyz成分の読み込み
+			XMFLOAT3	normal{};
+			line_stream >> normal.x;
+			line_stream >> normal.y;
+			line_stream >> normal.z;
+			//法線ベクトルデータに追加
+			normals.emplace_back(normal);
 		}
 	}
 	file.close();
