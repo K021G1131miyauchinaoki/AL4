@@ -193,12 +193,12 @@ void Object3d::LoadMaterial(const std::string& directoryPath, const std::string&
 			line_stream >> material.specular.y;
 			line_stream >> material.specular.z;
 		}
-		//先頭文字列がmap_Kdならテクスチャ
-		if (key == "Ks")
+		//先頭文字がmap_Kdならテクスチャファイル名
+		if (key=="map_Kd")
 		{
-			//テクスチャのファイル読み込み
+			//テクスチャのファイル名読み込み
 			line_stream >> material.textureFilename;
-			//テクスチャの読み込み
+			//テクスチャ読み込み
 			LoadTexture(directoryPath, material.textureFilename);
 		}
 	}
@@ -255,7 +255,7 @@ void Object3d::InitializeGraphicsPipeline()
 
 	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/Shaders/OBJVS.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/ObjVS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -278,7 +278,7 @@ void Object3d::InitializeGraphicsPipeline()
 
 	// ピクセルシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/Shaders/OBJPS.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/ObjPS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
