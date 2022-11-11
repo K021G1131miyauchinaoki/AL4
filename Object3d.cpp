@@ -255,7 +255,7 @@ void Object3d::InitializeGraphicsPipeline()
 
 	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/Shaders/OBJVertexShader.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/OBJVS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "vs_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -278,7 +278,7 @@ void Object3d::InitializeGraphicsPipeline()
 
 	// ピクセルシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/Shaders/OBJPixelShader.hlsl",	// シェーダファイル名
+		L"Resources/Shaders/OBJPS.hlsl",	// シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "ps_5_0",	// エントリーポイント名、シェーダーモデル指定
@@ -487,9 +487,9 @@ void Object3d::CreateModel()
 	//.objファイルを開く
 	//file.open("Resources/triangle_tex/triangle_tex.obj");
 	const std::string modelname = "triangle_mat";
-	const std::string filename = modelname+"obj";
-	const std::string directorPath = "Resources/"+modelname+"/";
-	file.open(directorPath + filename);
+	const std::string filename = modelname+"obj";//"triangle_mat.obj"
+	const std::string directorPath = "Resources/"+modelname+"/";//"Resources/triangle_mat"
+	file.open(directorPath + filename);//"Resources/triangle_mat/triangle_mat.obj"
 
 	
 	//ファイルオープン失敗をチェック
@@ -515,7 +515,7 @@ void Object3d::CreateModel()
 			std::string filename;
 			line_stream >> filename;
 			//マテリアル読み込み
-			
+			LoadMaterial(directorPath, filename);
 		}
 		//先頭文字列がｖなら頂点座標
 		if (key=="v")
@@ -775,9 +775,19 @@ bool Object3d::Initialize()
 	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	// リソース設定
 	CD3DX12_RESOURCE_DESC resourceDesc =
-		CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataB1) + 0xff) & ~0xff);
+		CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataB0) + 0xff) & ~0xff);
 
 	HRESULT result;
+
+	// 定数バッファの生成
+	result = device->CreateCommittedResource(
+		&heapProps, // アップロード可能
+		D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&constBuffB0));
+
+	// リソース設定
+	resourceDesc =
+	CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataB1) + 0xff) & ~0xff);
 
 	// 定数バッファの生成
 	result = device->CreateCommittedResource(
@@ -813,6 +823,13 @@ void Object3d::Update()
 		// 親オブジェクトのワールド行列を掛ける
 		matWorld *= parent->matWorld;
 	}
+
+	// 定数バッファへデータ転送
+	ConstBufferDataB0* constMap = nullptr;
+	result = constBuffB0->Map(0, nullptr, (void**)&constMap);
+	//constMap->color = color;
+	constMap->mat = matWorld * matView * matProjection;	// 行列の合成
+	constBuffB0->Unmap(0, nullptr);
 
 	// 定数バッファへデータ転送
 	ConstBufferDataB1* constMap1 = nullptr;
