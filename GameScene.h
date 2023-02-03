@@ -7,6 +7,7 @@
 #include "Object3d.h"
 #include "DebugText.h"
 #include"Model.h"
+#include"CollisionPrimitive.h"
 
 /// <summary>
 /// ゲームシーン
@@ -66,5 +67,10 @@ private: // メンバ変数
 	//モデル
 	Model* model ;
 	Model* model2;
+	//当たり判定
+	//球
+	Sphere sphere;
+	//平面
+	Plane plane;
 };
 
