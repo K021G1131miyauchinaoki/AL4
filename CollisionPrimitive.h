@@ -18,3 +18,15 @@ struct Plane
 	//原点からの距離
 	float distance = 0.0f;
 };
+
+//法線付き三角形
+class Triangle
+{
+public:
+	//頂点データ３つ
+	DirectX::XMVECTOR p0;
+	DirectX::XMVECTOR p1;
+	DirectX::XMVECTOR p2;
+	//法線ベクトル
+	DirectX::XMVECTOR normal;
+};

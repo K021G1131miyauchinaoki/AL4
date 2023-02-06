@@ -72,5 +72,7 @@ private: // メンバ変数
 	Sphere sphere;
 	//平面
 	Plane plane;
+	//三角形
+	Triangle triangle;
 };
 

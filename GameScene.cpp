@@ -56,6 +56,11 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input)
 	//平面の初期値を設定
 	plane.normal = XMVectorSet(0, 1, 0, 0);//法線ベクトル
 	plane.distance = 0.0f;//原点からの距離
+	//三角形の初期値を設定
+	triangle.p0 = XMVectorSet(-1.0f, 1.0f, -1.0f, 1);
+	triangle.p1 = XMVectorSet(-1.0f, 1.0f, +1.0f, 1);
+	triangle.p2 = XMVectorSet(+1.0f, 1.0f, -1.0f, 1);
+	triangle.normal = XMVectorSet(0.0f,1.0f, 0.0f, 0);
 
 }
 
@@ -111,18 +116,37 @@ void GameScene::Update()
 	debugText.Print(spherestr.str(), 50, 180, 1.0f);
 
 	//球と平面の当たり判定
-	bool hit = Collision::CheckAphere2Plane(sphere, plane);
-	if (hit) {
-		debugText.Print("hit", 50, 200, 1.0f);
+	{
+		bool hit = Collision::CheckAphere2Plane(sphere, plane);
+		if (hit) {
+			debugText.Print("hitPlane", 50, 200, 1.0f);
 
-		std::ostringstream spherestr;
-		spherestr << "("
-			<< std::fixed << std::setprecision(2)//小数点２桁まで
-			<< sphere.center.m128_f32[0] << ","//x
-			<< sphere.center.m128_f32[1] << ","//y
-			<< sphere.center.m128_f32[2] << ")";//z
+			std::ostringstream spherestr;
+			spherestr << "("
+				<< std::fixed << std::setprecision(2)//小数点２桁まで
+				<< sphere.center.m128_f32[0] << ","//x
+				<< sphere.center.m128_f32[1] << ","//y
+				<< sphere.center.m128_f32[2] << ")";//z
 
-		debugText.Print(spherestr.str(), 50, 220, 1.0f);
+			debugText.Print(spherestr.str(), 50, 220, 1.0f);
+		}
+	}
+	//球と三角形の当たり判定
+	{
+		XMVECTOR inter;
+		bool hit = Collision::CheckSphere2Triangle(sphere, triangle, &inter);
+		if (hit) {
+			debugText.Print("hitTriangle", 50, 240, 1.0f);
+
+			std::ostringstream spherestr;
+			spherestr << "("
+				<< std::fixed << std::setprecision(2)//小数点２桁まで
+				<< sphere.center.m128_f32[0] << ","//x
+				<< sphere.center.m128_f32[1] << ","//y
+				<< sphere.center.m128_f32[2] << ")";//z
+
+			debugText.Print(spherestr.str(), 50, 260, 1.0f);
+		}
 	}
 }
 
