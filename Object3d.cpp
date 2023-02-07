@@ -31,6 +31,8 @@ XMFLOAT3 Object3d::up = { 0, 1, 0 };
 Object3d::~Object3d() {
 	if (collider)
 	{
+		//コリジョンマネージャから登録を解除する
+		CollisionManager::GetInstance()->RemoveCollider(collider);
 		delete collider;
 	}
 }
@@ -112,6 +114,10 @@ void Object3d::SetTarget(XMFLOAT3 target)
 void Object3d::SetCollider(BaseCollider* collider) {
 	collider->SetObject(this);
 	this->collider = collider;
+	//コリジョンマネージャに登録
+	CollisionManager::GetInstance()->AddCollider(collider);
+	//コライダーを更新
+	collider->Update();
 }
 
 void Object3d::CameraMoveVector(XMFLOAT3 move)

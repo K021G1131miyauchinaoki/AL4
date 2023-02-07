@@ -4,6 +4,8 @@
 class Collision
 {
 public:
+	//球と球
+	static bool CheckSphere2Sphere(const Sphere& sphere1, const Sphere& sphere2, DirectX::XMVECTOR* inter = nullptr);
 	//球と平面
 	static	bool CheckSphere2Plane(const Sphere& sphere, const Plane& plane, DirectX::XMVECTOR* inter = nullptr);
 	//点と三角形の最近接点を求める

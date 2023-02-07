@@ -7,6 +7,7 @@
 #include <d3dx12.h>
 #include"Model.h"
 #include"CollisionInfo.h"
+#include"CollisionManager.h"
 
 class BaseCollider;
 
