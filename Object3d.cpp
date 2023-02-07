@@ -6,6 +6,7 @@
 #include<string>
 #include<vector>
 #include<cassert>
+#include"BaseCollider.h"
 
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -26,6 +27,14 @@ XMMATRIX Object3d::matProjection{};
 XMFLOAT3 Object3d::eye = { 0, 0, -50.0f };
 XMFLOAT3 Object3d::target = { 0, 0, 0 };
 XMFLOAT3 Object3d::up = { 0, 1, 0 };
+
+Object3d::~Object3d() {
+	if (collider)
+	{
+		delete collider;
+	}
+}
+
 
 void Object3d::StaticInitialize(ID3D12Device* device, int window_width, int window_height)
 {
@@ -98,6 +107,11 @@ void Object3d::SetTarget(XMFLOAT3 target)
 	Object3d::target = target;
 
 	UpdateViewMatrix();
+}
+
+void Object3d::SetCollider(BaseCollider* collider) {
+	collider->SetObject(this);
+	this->collider = collider;
 }
 
 void Object3d::CameraMoveVector(XMFLOAT3 move)
@@ -293,6 +307,9 @@ void Object3d::UpdateViewMatrix()
 
 bool Object3d::Initialize()
 {
+	//クラス名の文字列を取得
+	name = typeid(*this).name();
+
 	// nullptrチェック
 	assert(device);
 
@@ -347,6 +364,12 @@ void Object3d::Update()
 	//constMap->color = color;
 	constMap->mat = matWorld * matView * matProjection;	// 行列の合成
 	constBuffB0->Unmap(0, nullptr);
+
+	//当たり判定更新
+	if (collider)
+	{
+		collider->Update();
+	}
 }
 
 void Object3d::Draw() {

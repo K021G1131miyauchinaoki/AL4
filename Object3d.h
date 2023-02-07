@@ -6,6 +6,9 @@
 #include <DirectXMath.h>
 #include <d3dx12.h>
 #include"Model.h"
+#include"CollisionInfo.h"
+
+class BaseCollider;
 
 /// <summary>
 /// 3Dオブジェクト
@@ -132,16 +135,26 @@ private:// 静的メンバ関数
 	static void UpdateViewMatrix();
 
 public: // メンバ関数
-	bool Initialize();
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	Object3d() = default;
+
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	virtual ~Object3d();
+
+	virtual	bool Initialize();
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	virtual	void Update();
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
+	virtual	void Draw();
 
 	/// <summary>
 	/// 座標の取得
@@ -155,13 +168,25 @@ public: // メンバ関数
 	/// <param name="position">座標</param>
 	void SetPosition(const XMFLOAT3& position) { this->position = position; }
 
-	//セッター
+	//ワールド行列
+	const XMMATRIX& GetMatWorld() { return matWorld; }
+
+
 	void	SetModel(Model* model_) { model = model_; }
 
 	void SetScale(XMFLOAT3 scale_) { scale = scale_; }
 
+	//コライダーのセット
+	void SetCollider(BaseCollider* collider);
 
-private: // メンバ変数
+	virtual void OnCollision(const CollisionInfo&info){}
+
+
+protected: // メンバ変数
+	//クラス名
+	const char* name = nullptr;
+	//コライダー
+	BaseCollider* collider = nullptr;
 	//ComPtr<ID3D12Resource> constBuff; // 定数バッファ
 	ComPtr<ID3D12Resource> constBuffB0; // 定数バッファ
 	//ComPtr<ID3D12Resource> constBuffB1; // 定数バッファ
