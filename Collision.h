@@ -13,6 +13,7 @@ public:
 
 	//レイと平面
 	static	bool CheckRay2Plane(const Ray& ray, const Plane& plane,float *distance, DirectX::XMVECTOR* inter = nullptr);
-
+	//レイと三角形
+	static	bool CheckRay2Triangle(const Ray& ray, const Triangle& triangle, float* distance, DirectX::XMVECTOR* inter = nullptr);
 };
 
