@@ -183,9 +183,33 @@ void GameScene::Update()
 	}
 	//レイと三角形の当たり判定
 	{
+		//XMVECTOR inter;
+		//float distance;
+		//bool hit = Collision::CheckRay2Triangle(ray, triangle, &distance, &inter);
+		//if (hit) {
+		//	debugText.Print("hitRay", 50, 200, 1.0f);
+
+		//	std::ostringstream raystr;
+		//	raystr << "inter:("
+		//		<< std::fixed << std::setprecision(2)//小数点２桁まで
+		//		<< inter.m128_f32[0] << ","//x
+		//		<< inter.m128_f32[1] << ","//y
+		//		<< inter.m128_f32[2] << ")";//z
+
+		//	debugText.Print(raystr.str(), 50, 220, 1.0f);
+		//	raystr.str("");
+		//	raystr.clear();
+		//	raystr << "distance:("
+		//		<< std::fixed << std::setprecision(2)<< distance << ")";
+
+		//	debugText.Print(raystr.str(), 50, 240, 1.0f);
+		//}
+	}
+	//レイと球の当たり判定
+	{
 		XMVECTOR inter;
 		float distance;
-		bool hit = Collision::CheckRay2Triangle(ray, triangle, &distance, &inter);
+		bool hit = Collision::CheckRay2Sphere(ray, sphere, &distance, &inter);
 		if (hit) {
 			debugText.Print("hitRay", 50, 200, 1.0f);
 
@@ -200,7 +224,7 @@ void GameScene::Update()
 			raystr.str("");
 			raystr.clear();
 			raystr << "distance:("
-				<< std::fixed << std::setprecision(2)<< distance << ")";
+				<< std::fixed << std::setprecision(2) << distance << ")";
 
 			debugText.Print(raystr.str(), 50, 240, 1.0f);
 		}

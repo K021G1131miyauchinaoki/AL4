@@ -15,5 +15,8 @@ public:
 	static	bool CheckRay2Plane(const Ray& ray, const Plane& plane,float *distance, DirectX::XMVECTOR* inter = nullptr);
 	//レイと三角形
 	static	bool CheckRay2Triangle(const Ray& ray, const Triangle& triangle, float* distance, DirectX::XMVECTOR* inter = nullptr);
+	//レイと球
+	static	bool CheckRay2Sphere(const Ray& ray, const Sphere&sphere, float* distance, DirectX::XMVECTOR* inter = nullptr);
+
 };
 
