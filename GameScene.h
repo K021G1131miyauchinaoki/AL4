@@ -74,5 +74,7 @@ private: // メンバ変数
 	Plane plane;
 	//三角形
 	Triangle triangle;
+	//レイ
+	Ray ray;
 };
 

@@ -30,3 +30,14 @@ public:
 	//法線ベクトル
 	DirectX::XMVECTOR normal;
 };
+
+//レイ（半直線）
+struct Ray
+{
+	//始点座標
+	DirectX::XMVECTOR  start = { 0,0,0,1 };
+	//方向
+	DirectX::XMVECTOR  dir = { 1,0,0,0 };
+
+	//
+};

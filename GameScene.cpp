@@ -61,6 +61,9 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input)
 	triangle.p1 = XMVectorSet(-1.0f, 1.0f, +1.0f, 1);
 	triangle.p2 = XMVectorSet(+1.0f, 1.0f, -1.0f, 1);
 	triangle.normal = XMVectorSet(0.0f,1.0f, 0.0f, 0);
+	//レイの初期値を設定
+	ray.start = XMVectorSet(0, 1, 0, 1);//原点のやや上
+	ray.dir = XMVectorSet(0, -1, 0, 0);//下向き
 
 }
 
@@ -95,57 +98,87 @@ void GameScene::Update()
 
 	object3d1->Update();
 	object3d2->Update();
+	//球操作
+	{
+		////y
+		//XMVECTOR moveY = XMVectorSet(0, 0.01f, 0, 0);
+		//if (input->PushKey(DIK_NUMPAD8)) { sphere.center += moveY; }
+		//else 	if (input->PushKey(DIK_NUMPAD2)) { sphere.center -= moveY; }
+		////x
+		//XMVECTOR moveX = XMVectorSet(0.01f, 0, 0, 0);
+		//if (input->PushKey(DIK_NUMPAD6)) { sphere.center += moveX; }
+		//else 	if (input->PushKey(DIK_NUMPAD4)) { sphere.center -= moveX; }
+	}
+	//レイ操作
 	{
 		//y
 		XMVECTOR moveY = XMVectorSet(0, 0.01f, 0, 0);
-		if (input->PushKey(DIK_NUMPAD8)) { sphere.center += moveY; }
-		else 	if (input->PushKey(DIK_NUMPAD2)) { sphere.center -= moveY; }
+		if (input->PushKey(DIK_NUMPAD8)) { ray.start += moveY; }
+		else 	if (input->PushKey(DIK_NUMPAD2)) { ray.start -= moveY; }
 		//x
 		XMVECTOR moveX = XMVectorSet(0.01f, 0, 0, 0);
-		if (input->PushKey(DIK_NUMPAD6)) { sphere.center += moveX; }
-		else 	if (input->PushKey(DIK_NUMPAD4)) { sphere.center -= moveX; }
+		if (input->PushKey(DIK_NUMPAD6)) { ray.start += moveX; }
+		else 	if (input->PushKey(DIK_NUMPAD4)) { ray.start -= moveX; }
 	}
 	//stringstreemで変数の値を埋め込んで整形する
 	std::ostringstream spherestr;
-	spherestr << "Sphere:("
+	spherestr << "ray.start:("
 		<< std::fixed << std::setprecision(2)//小数点２桁まで
-		<< sphere.center.m128_f32[0] << ","//x
-		<< sphere.center.m128_f32[1] << ","//y
-		<< sphere.center.m128_f32[2] << ")";//z
+		<< ray.start.m128_f32[0] << ","//x
+		<< ray.start.m128_f32[1] << ","//y
+		<< ray.start.m128_f32[2] << ")";//z
 
 	debugText.Print(spherestr.str(), 50, 180, 1.0f);
 
 	//球と平面の当たり判定
 	{
-		bool hit = Collision::CheckAphere2Plane(sphere, plane);
-		if (hit) {
-			debugText.Print("hitPlane", 50, 200, 1.0f);
+		//bool hit = Collision::CheckSphere2Plane(sphere, plane);
+		//if (hit) {
+		//	debugText.Print("hitPlane", 50, 200, 1.0f);
 
-			std::ostringstream spherestr;
-			spherestr << "("
-				<< std::fixed << std::setprecision(2)//小数点２桁まで
-				<< sphere.center.m128_f32[0] << ","//x
-				<< sphere.center.m128_f32[1] << ","//y
-				<< sphere.center.m128_f32[2] << ")";//z
+		//	std::ostringstream spherestr;
+		//	spherestr << "("
+		//		<< std::fixed << std::setprecision(2)//小数点２桁まで
+		//		<< sphere.center.m128_f32[0] << ","//x
+		//		<< sphere.center.m128_f32[1] << ","//y
+		//		<< sphere.center.m128_f32[2] << ")";//z
 
-			debugText.Print(spherestr.str(), 50, 220, 1.0f);
-		}
+		//	debugText.Print(spherestr.str(), 50, 220, 1.0f);
+		//}
 	}
 	//球と三角形の当たり判定
 	{
-		XMVECTOR inter;
-		bool hit = Collision::CheckSphere2Triangle(sphere, triangle, &inter);
-		if (hit) {
-			debugText.Print("hitTriangle", 50, 240, 1.0f);
+		//XMVECTOR inter;
+		//bool hit = Collision::CheckSphere2Triangle(sphere, triangle, &inter);
+		//if (hit) {
+		//	debugText.Print("hitTriangle", 50, 240, 1.0f);
 
-			std::ostringstream spherestr;
-			spherestr << "("
+		//	std::ostringstream spherestr;
+		//	spherestr << "("
+		//		<< std::fixed << std::setprecision(2)//小数点２桁まで
+		//		<< sphere.center.m128_f32[0] << ","//x
+		//		<< sphere.center.m128_f32[1] << ","//y
+		//		<< sphere.center.m128_f32[2] << ")";//z
+
+		//	debugText.Print(spherestr.str(), 50, 260, 1.0f);
+		//}
+	}
+	//レイと平面の当たり判定
+	{
+		XMVECTOR inter;
+		float distance;
+		bool hit = Collision::CheckRay2Plane(ray, plane,&distance,&inter);
+		if (hit) {
+			debugText.Print("hitRay", 50, 200, 1.0f);
+
+			std::ostringstream raystr;
+			raystr << "("
 				<< std::fixed << std::setprecision(2)//小数点２桁まで
 				<< sphere.center.m128_f32[0] << ","//x
 				<< sphere.center.m128_f32[1] << ","//y
 				<< sphere.center.m128_f32[2] << ")";//z
 
-			debugText.Print(spherestr.str(), 50, 260, 1.0f);
+			debugText.Print(raystr.str(), 50, 220, 1.0f);
 		}
 	}
 }
