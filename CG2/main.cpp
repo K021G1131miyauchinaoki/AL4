@@ -83,19 +83,30 @@ int	WINAPI	WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//モデル
 	Model* modelPlane = Model::LoadFromOBJ("Plane");
 	Model* modelSphere = Model::LoadFromOBJ("Sphere");
+	Model* modelRay = Model::LoadFromOBJ("ray");
+	Model* modelBox = Model::LoadFromOBJ("Box");
 	//3dオブジェクト生成
 	Object3d* planeObj = Object3d::Create();
 	Object3d* sphereObj = Object3d::Create();
+	Object3d* rayObj = Object3d::Create();
+	Object3d* boxObj = Object3d::Create();
 	//modelクラスをひも付け
 	//平面
 	planeObj->SetModel(modelPlane);
 	planeObj->SetPos({ 0,0,0 });
-	planeObj->SetScale({255,1,255 });
+	planeObj->SetScale({50,1,50 });
 	//球
 	sphereObj->SetModel(modelSphere);
-	sphereObj->SetPos({ +5,20,0 });
+	sphereObj->SetPos({ -10,20,0 });
 	sphereObj->SetScale({10,10,10});
-
+	//ボックス
+	//boxObj->SetModel(modelBox);
+	//boxObj->SetPos({ 10,5,0 });
+	//boxObj->SetScale({2,10,2});
+	//レイ
+	rayObj->SetModel(modelRay);
+	rayObj->SetScale({ 1,50,1 });
+	rayObj->SetPos({5,-10,0});
 	//imguiクラス
 	ImguiManager* imguiM = new ImguiManager;
 	imguiM->Initialize(winApp, directXCom);
@@ -106,7 +117,9 @@ int	WINAPI	WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Plane plane;
 	plane.distance = 0.0f;
 	plane.normal = { 0,1,0 };
-
+	Ray ray;
+	ray.start = { 0,0,0 };
+	ray.dir = { 0,-1,0 };
 #pragma	endregion
 	while (true)
 	{
@@ -155,9 +168,34 @@ int	WINAPI	WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			sphereObj->SetPos(move);
 		}
+		//レイの移動処理
+		{
+			Vector3 move = rayObj->GetPos();
+			ray.start = Vector3(
+				rayObj->GetPos().x,
+				rayObj->GetPos().y + rayObj->GetScale().y,
+				rayObj->GetPos().z);
+			if (input->PushKey(DIK_A))
+			{
+				move.x -= 1.0f;
+			}
+			else if (input->PushKey(DIK_D))
+			{
+				move.x += 1.0f;
+			}
+			if (input->PushKey(DIK_S))
+			{
+				move.y -= 1.0f;
+			}
+			if (input->PushKey(DIK_W))
+			{
+				move.y += 1.0f;
+			}
+			rayObj->SetPos(move);
+		}
 		//球と平面の当たり判定
 		{
-			bool hit = Collision::CheckAphere2Plane(sphere, plane);
+			bool hit = Collision::CheckSphere2Plane(sphere, plane);
 			if (hit)
 			{
 				sphereObj->SetColor({ 1,0,0,1 });
@@ -167,9 +205,24 @@ int	WINAPI	WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				sphereObj->SetColor({ 1,1,1,1 });
 			}
 		}
+		//レイと平面の当たり判定
+		{
+			float distance;
+			bool hit = Collision::CheckRay2Plane(ray, plane,&distance);
+			if (hit)
+			{
+				rayObj->SetColor({ 1,0,0,1 });
+			}
+			else
+			{
+				rayObj->SetColor({ 1,1,1,1 });
+			}
+		}
 		
 		planeObj->Update();
 		sphereObj->Update();
+		rayObj->Update();
+		boxObj->Update();
 		//-------------------描画処理-------------------
 		//Direct毎フレーム処理　ここから
 		directXCom->PreDraw();
@@ -177,6 +230,7 @@ int	WINAPI	WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Object3d::PreDraw(directXCom->GetCommandList());
 		planeObj->Draw();
 		sphereObj->Draw();
+		rayObj->Draw();
 		Object3d::PostDraw();
 
 		//スプライト

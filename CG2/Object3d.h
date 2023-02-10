@@ -165,6 +165,7 @@ public: // ƒƒ“ƒoŠÖ”
 
 	void SetColor(const Vector4& color) { this->color = color; }
 
+	const Vector3& GetScale() const { return scale; }
 
 
 private: // ƒƒ“ƒo•Ï”

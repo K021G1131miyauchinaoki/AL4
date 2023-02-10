@@ -19,3 +19,12 @@ struct Plane
 	//原点からの距離
 	float distance = 0.0f;
 };
+
+//レイ（半直線）
+struct Ray
+{
+	//始点座標
+	Vector3  start = { 0,0,0 };
+	//方向
+	Vector3  dir = { 1,0,0 };
+};

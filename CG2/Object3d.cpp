@@ -25,8 +25,8 @@ XMMATRIX Object3d::matView{};
 XMMATRIX Object3d::matProjection{};
 Matrix4 Object3d::matV{};
 Matrix4 Object3d::matPro{};
-XMFLOAT3 Object3d::eye = { 0, 50, -200.0f };
-XMFLOAT3 Object3d::target = { 0, 0, 0 };
+XMFLOAT3 Object3d::eye = { 0, 10, -100.0f };
+XMFLOAT3 Object3d::target = { 0, -1, 0 };
 XMFLOAT3 Object3d::up = { 0, 1, 0 };
 
 void Object3d::StaticInitialize(ID3D12Device* device, int window_width, int window_height)
